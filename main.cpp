@@ -16,15 +16,19 @@ struct Node {
   Node* right;
   Node* left;
   Node* next;
-  char data;
+  int data;
 };
 
 //Struct for printing the tree
+//Credit to Stefan Ene and techiedelight website for helping with the implementation
 struct Trunk {
   Trunk *prev;
-  char str[10];
+  char* str;
 
-  
+  Trunk(Trunk *prev, char* str) {
+    this->prev = prev;
+    this->str = str;
+  }
 };
 //Function initializations
 void manualInput(Node* &head);
@@ -33,7 +37,8 @@ void parseInput(Node* &head, char* input, int* token, int* heaparr, int num, int
 void insert(int* arr, int n, Node* &head);
 void buildTree(int val, Node* &head, Node* current);
 void showTrunks(Trunk *p);
-void printTree(Node* head, Trunk *prev, bool isLeft);
+void printTree(Node* current, Trunk *prev, bool isLeft);
+void searchTree(Node* head, int val);
 
 int main() {
   //Declare nodes to null
@@ -63,7 +68,7 @@ int main() {
     cin.ignore();
     //Add
     if (mainInput2 == 1) {
-
+      manualInput(head);
     }
     //Remove
     if (mainInput2 == 2) {
@@ -75,7 +80,7 @@ int main() {
     }
     //Display
     if (mainInput2 == 4) {
-
+      printTree(head, NULL, false);
     }
     //Quit
     if (mainInput2 == 5) {
@@ -99,7 +104,6 @@ void manualInput(Node* &head) {
   int j = 0;
   //Parse the input
   parseInput(head, input, token, ftoken, num, count, total, exp, j);
-  
 }
 
 //File entry
@@ -190,6 +194,8 @@ void parseInput(Node* &head, char* input, int* token, int* heaparr, int num, int
     }
   }
   insert(heaparr, count, head);
+  //  visualDisplay(head);
+  printTree(head, NULL, false);
 }
 
 //Insert nodes into tree
@@ -209,35 +215,39 @@ void buildTree(int val, Node* &head, Node* current) {
   //If the head isn't NULL
   else if (head != NULL) {
     //If val is greater than head->val
-    if (val > head->data) {
-      //If head->right is NULL
-      if (head->right == NULL) {
+    if (val >= current->data) {
+      //If current->right is NULL
+      if (current->right == NULL) {
 	current->right = new Node();
 	current->right->data = val;
       }
-      //If head->right isn't NULL
-      else if (head->right != NULL) {
+      //If current->right isn't NULL
+      else if (current->right != NULL) {
 	buildTree(val, head, current->right);
       }
     }
     //If val is less than head->val
-    else if (val < head->data) {
-      //If head->left is NULL
-      if (head->left == NULL) {
+    else if (val < current->data) {
+      //If current->left is NULL
+      if (current->left == NULL) {
 	current->left = new Node();
 	current->left->data = val;
       }
-      //If head->left isn't NULL
-      else if (head->left != NULL) {
+      //If current->left isn't NULL
+      else if (current->left != NULL) {
 	buildTree(val, head, current->left);
       }
     }
   }
 }
+//Search the tree
+void searchTree(Node* head, int val) {
+
+}
+
 //These print tree functions are partially from techiedelight with help from Stefan Ene, period 3
 //www.com/techiedelight.com/c-program-print-binary-tree
 //www.com/github.com/Stefanene/Binary-Search-Tree/blob/master/main.cpp
-
 //Print branches of the binary tree
 void showTrunks(Trunk *p) {
   //If the trunk is empty
@@ -246,5 +256,37 @@ void showTrunks(Trunk *p) {
   }
   //Recursively call the function
   showTrunks(p->prev);
-  cout << p->str << endl;
+  cout << p->str;
+}
+
+void printTree(Node* current, Trunk* prev, bool isLeft) {
+  //If the current is empty
+  if (current == NULL) {
+    //End the functiom
+    return;
+  }
+  //Create a tab character
+  char* prev_str = (char*)("    ");
+  Trunk *trunk = new Trunk(prev, prev_str);
+  printTree(current->left, trunk, true);
+  //If prev isn't 0 but is false
+  if (!prev) {
+    trunk->str = (char*)("---");
+  }
+  else if (isLeft == true) {
+    trunk->str = (char*)(".---");
+    prev_str = (char*)("   |");
+  }
+  else {
+    trunk->str = (char*)("`---");
+    prev->str = prev_str;
+  }
+  showTrunks(trunk);
+  cout << current->data << endl;
+  //If prev == true
+  if (prev) {
+    prev->str = prev_str;
+  }
+  trunk->str = (char*)("   |");
+  printTree(current->right, trunk, false);
 }
