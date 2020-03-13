@@ -38,7 +38,7 @@ void insert(int* arr, int n, Node* &head);
 void buildTree(int val, Node* &head, Node* current);
 void showTrunks(Trunk *p);
 void printTree(Node* current, Trunk *prev, bool isLeft);
-void searchTree(Node* head, int val);
+bool searchTree(Node* head, int val);
 
 int main() {
   //Declare nodes to null
@@ -49,6 +49,7 @@ int main() {
   bool running = true;
   int mainInput;
   int mainInput2;
+  int mainInput3;
   //Ask user for input
   cout << "Enter 1 to enter through keyboard, and 2 to enter through a file" << endl;
   cin >> mainInput;
@@ -76,7 +77,18 @@ int main() {
     }
     //Search
     if (mainInput2 == 3) {
-
+	//Prompt user for input
+	cout << "Enter a number to search for: " << endl;
+	cin >> mainInput3;
+	cin.ignore();
+	//If the number exists
+	if (searchTree(head, mainInput3) == true) {
+	    cout << "This number exists!" << endl;	
+	}
+	//If the number doesn't exist
+	if (searchTree(head, mainInput3) == false) {
+	     cout << "This number does not exist!" << endl;	
+	}
     }
     //Display
     if (mainInput2 == 4) {
@@ -194,7 +206,6 @@ void parseInput(Node* &head, char* input, int* token, int* heaparr, int num, int
     }
   }
   insert(heaparr, count, head);
-  //  visualDisplay(head);
   printTree(head, NULL, false);
 }
 
@@ -214,7 +225,7 @@ void buildTree(int val, Node* &head, Node* current) {
   }
   //If the head isn't NULL
   else if (head != NULL) {
-    //If val is greater than head->val
+    //If val is greater than or equal to current->data
     if (val >= current->data) {
       //If current->right is NULL
       if (current->right == NULL) {
@@ -226,7 +237,7 @@ void buildTree(int val, Node* &head, Node* current) {
 	buildTree(val, head, current->right);
       }
     }
-    //If val is less than head->val
+    //If val is less than current->data
     else if (val < current->data) {
       //If current->left is NULL
       if (current->left == NULL) {
@@ -241,8 +252,9 @@ void buildTree(int val, Node* &head, Node* current) {
   }
 }
 //Search the tree
-void searchTree(Node* head, int val) {
-
+bool searchTree(Node* head, int val) {
+   
+    
 }
 
 //These print tree functions are partially from techiedelight with help from Stefan Ene, period 3
