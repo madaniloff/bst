@@ -38,7 +38,8 @@ void insert(int* arr, int n, Node* &head);
 void buildTree(int val, Node* &head, Node* current);
 void showTrunks(Trunk *p);
 void printTree(Node* current, Trunk *prev, bool isLeft);
-bool searchTree(Node* head, int val);
+bool searchTree(Node* current, int val);
+void remove(Node* &current, int val);
 
 int main() {
   //Declare nodes to null
@@ -50,6 +51,7 @@ int main() {
   int mainInput;
   int mainInput2;
   int mainInput3;
+  int mainInput4;
   //Ask user for input
   cout << "Enter 1 to enter through keyboard, and 2 to enter through a file" << endl;
   cin >> mainInput;
@@ -73,7 +75,11 @@ int main() {
     }
     //Remove
     if (mainInput2 == 2) {
-
+      //Prompt user for input
+      cout << "Enter the number you would like to delete: " << endl;
+      cin >> mainInput4;
+      cin.ignore();
+      remove(head, mainInput4);
     }
     //Search
     if (mainInput2 == 3) {
@@ -252,9 +258,86 @@ void buildTree(int val, Node* &head, Node* current) {
   }
 }
 //Search the tree
-bool searchTree(Node* head, int val) {
-   
-    
+bool searchTree(Node* current, int val) {
+  //If the val is equal to current->data
+  if (val == current->data) {
+    return true;
+  }
+  //If the val is greater than or equal to current->data
+  else if (val >= current->data) {
+    //If current->right isn't NULL
+    if (current->right != NULL) {
+      searchTree(current->right, val);
+    }
+    else {
+      return false;
+    }
+  }
+  //If the val is less than current->data
+  else if (val < current->data) {
+    //If current->left isn't NULL
+    if (current->left != NULL) {
+      searchTree(current->left, val);
+    }
+    else {
+      return false;
+    }
+  }
+}
+
+//Remove a node from the tree
+void remove(Node* &current, int val) {
+  //Check if the value exists in the tree
+  if (searchTree(current, val) == false) {
+    cout << "This value doesn't exist!" << endl;
+  }
+  //If the value does exist
+  else {
+    if (val == current->data) {
+      //If the node is a leaf node
+      if (current->left == NULL && current->right == NULL) {
+	delete current;
+	current = NULL;
+      }
+      //If the node has one child
+      else if ((current->right == NULL && current->left != NULL) || (current->left == NULL && current->right != NULL)) {
+	//Right child exists
+	if (current->left == NULL) {
+	  Node* temp = current;
+	  current = current->right;
+	  delete temp;
+	  temp = NULL;
+	}
+	//Left child exists
+	else if (current->right == NULL) {
+	  Node* temp = current;
+	  current = current->left;
+	  delete temp;
+	  temp = NULL;
+	}
+      }
+      //If the node has two children
+      else if (current->right != NULL && current->left != NULL) {
+	//Find the minimum value in the right subtree
+	Node* temp = current->right;
+	//While the right tree doesn't have a left value (so that its the minimum value)
+	while (temp->left != NULL) {
+	  temp = temp->left;
+	}
+	current->data = temp->data;
+	//Call the function again to delete the duplicate node
+	remove(current->right, temp->data);
+      }
+    }
+    //If the val is greater than or equal to current->data
+    else if (val >= current->data) {
+      remove(current->right, val);
+    }
+    //If the val is less than current->data
+    else if (val < current->data) {
+      remove(current->left, val);
+    }
+  }
 }
 
 //These print tree functions are partially from techiedelight with help from Stefan Ene, period 3
@@ -301,4 +384,4 @@ void printTree(Node* current, Trunk* prev, bool isLeft) {
   }
   trunk->str = (char*)("   |");
   printTree(current->right, trunk, false);
-}
+} 
